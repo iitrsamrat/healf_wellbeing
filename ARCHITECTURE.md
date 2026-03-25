@@ -57,15 +57,34 @@ Example: "I train hard, sleep badly, feel stressed." Move agent and Sleep agent 
 
 ## 2. Metrics
 
-| Experience | Primary metrics | Guardrail |
-|---|---|---|
-| 1 — Know the user | % users with 3+ profile fields after 7 days; subscription conversion profiled vs not | Signup completion must not drop below baseline |
-| 2 — Ranked shelf | Recommendation CTR vs bestsellers; one-time to subscription rate | Return rate on recommended products must not rise |
-| 3 — Why right for you | Add-to-cart rate with personal note vs without | Complaint rate on irrelevant recommendations |
-| 4 — Stack completion | Attach rate — second product in same session; average order value | Must never recommend something user already owns |
-| 5 — Agent reasoning | Helix session-to-purchase rate; thumbs up/down on responses | — |
+**North star: LTV Uptake**
+```
+LTV = avg order value × purchase frequency × customer lifetime
 
-On Experience 1: bounce rate will likely rise when we ask questions upfront. That's acceptable if subscription conversion and 90-day retention go up. We track both.
+One-time buyer:  £45 × 1             = £45
+Subscriber:      £35 × 12 × 2 years  = £840
+```
+
+LTV uptake = revenue per user (personalised cohort) − revenue per user (holdout) over 180 days. Every experience below has to move this number to justify existing.
+
+Three components:
+```
+P(one-time → subscription | 90 days)     ← biggest lever
+P(churn | subscribed)                    ← guardrail, must not rise  
+avg active subscriptions at 30/90/180d   ← compounding signal
+```
+
+---
+
+**Per experience:**
+
+| | Offline | Online | Guardrail |
+|---|---|---|---|
+| 1 — Know the user | Extraction accuracy: sample 50 Helix conversations, manually verify goal extraction. Target >90% | % users with 3+ profile fields at 7 days; subscription conversion profiled vs not | Signup completion must not drop |
+| 2 — Ranked shelf | Recall@100 on candidate set; NDCG@10 on ranking (purchase=3, cart=2, click=1, no action=0). Only ship if NDCG ≥ current baseline | CTR vs bestsellers shelf; one-time → subscription rate | Return rate on recommended products must not rise |
+| 3 — Why right for you | Mapping precision: clinical team reviews 50 ingredient→goal pairs, target >90% correct. Relevance check: Sarah's goal is sleep — reason must reference sleep, not bone health | Add-to-cart rate with note vs without; Zone members: biomarker recommendation → 6-month delta improvement | Complaint rate on irrelevant recommendations |
+| 4 — Stack completion | Stack gap precision: human expert reviews 20 users, checks if system identified the correct missing product | Attach rate = P(second product purchased \| stack section shown); avg order value lift | Must never recommend product user already owns |
+| 5 — Agent reasoning | Agent agreement rate: P(2+ agents recommend same product \| query). Low agreement = noisy signal | Helix session → purchase rate; thumbs up/down | Downstream — caught by Exp 2 and 3 metrics |
 
 ---
 
