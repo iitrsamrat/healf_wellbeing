@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Healf — Personalisation Demo</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f8f8f6;
+      color: #1a1a1a;
+    }
+
+    header {
+      background: #fff;
+      border-bottom: 1px solid #e8e8e4;
+      padding: 16px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .user-select {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      font-size: 13px;
+      color: #666;
+    }
+
+    .user-select select {
+      padding: 6px 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 13px;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .intent-bar {
+      background: #1a1a1a;
+      color: #fff;
+      padding: 10px 32px;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .intent-bar span {
+      color: #aaa;
+    }
+
+    .intent-pills {
+      display: flex;
+      gap: 8px;
+    }
+
+    .intent-pill {
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 500;
+      background: #333;
+    }
+
+    .intent-pill.active {
+      background: #fff;
+      color: #1a1a1a;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 0;
+      min-height: calc(100vh - 113px);
+    }
+
+    .sidebar {
+      background: #fff;
+      border-right: 1px solid #e8e8e4;
+      padding: 24px;
+    }
+
+    .sidebar h3 {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: #999;
+      margin-bottom: 16px;
+    }
+
+    .user-card {
+      background: #f8f8f6;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .user-card .name {
+      font-weight: 600;
+      font-size: 15px;
+      margin-bottom: 4px;
+    }
+
+    .user-card .meta {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 12px;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 500;
+      margin: 2px;
+      background: #eee;
+      color: #444;
+    }
+
+    .tag.zone {
+      background: #1a1a1a;
+      color: #fff;
+    }
+
+    .tag.goal {
+      background: #e8f4e8;
+      color: #2d6a2d;
+    }
+
+    .tag.owned {
+      background: #fef3e2;
+      color: #8a5500;
+    }
+
+    .helix-chips {
+      margin-bottom: 24px;
+    }
+
+    .chip {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 10px 14px;
+      margin-bottom: 8px;
+      border: 1px solid #e8e8e4;
+      border-radius: 20px;
+      background: #fff;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .chip:hover {
+      background: #1a1a1a;
+      color: #fff;
+      border-color: #1a1a1a;
+    }
+
+    .main {
+      padding: 32px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .section-header h2 {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .section-header .context-badge {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-weight: 500;
+    }
+
+    .badge-personalised {
+      background: #e8f4e8;
+      color: #2d6a2d;
+    }
+
+    .badge-cold {
+      background: #fef3e2;
+      color: #8a5500;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .product-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 16px;
+      border: 1px solid #e8e8e4;
+      transition: box-shadow 0.15s;
+      cursor: pointer;
+    }
+
+    .product-card:hover {
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    }
+
+    .product-card .pillar {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      color: #999;
+      margin-bottom: 6px;
+    }
+
+    .product-card .pname {
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 2px;
+    }
+
+    .product-card .brand {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 8px;
+    }
+
+    .product-card .price {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+
+    .pdp-panel {
+      background: #fff;
+      border-radius: 16px;
+      border: 1px solid #e8e8e4;
+      padding: 24px;
+      margin-bottom: 40px;
+    }
+
+    .pdp-panel h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .pdp-product {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #f0f0ec;
+    }
+
+    .pdp-product .info {
+      flex: 1;
+    }
+
+    .pdp-product .info .name {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .pdp-product .info .brand-line {
+      font-size: 13px;
+      color: #888;
+      margin-bottom: 12px;
+    }
+
+    .pdp-product .info .benefits {
+      font-size: 13px;
+      color: #444;
+      line-height: 1.5;
+    }
+
+    .why-block {
+      border: 1px solid #c8e6c8;
+      background: #f0faf0;
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+    }
+
+    .why-block.biomarker {
+      border-color: #b8cef8;
+      background: #eef3fe;
+    }
+
+    .why-block .label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: #2d6a2d;
+      margin-bottom: 6px;
+    }
+
+    .why-block.biomarker .label {
+      color: #1a4a8a;
+    }
+
+    .why-block .text {
+      font-size: 13px;
+      line-height: 1.5;
+      color: #333;
+    }
+
+    .add-to-cart {
+      background: #1a1a1a;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 14px 24px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 4px;
+    }
+
+    .stack-section {
+      margin-top: 20px;
+    }
+
+    .stack-section h4 {
+      font-size: 13px;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 12px;
+    }
+
+    .stack-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .stack-card {
+      background: #f8f8f6;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 12px;
+    }
+
+    .stack-card .sname {
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .stack-card .sbrand {
+      color: #888;
+      margin-bottom: 4px;
+    }
+
+    .stack-card .sprice {
+      font-weight: 600;
+    }
+
+    .helix-panel {
+      background: #1a1a1a;
+      border-radius: 16px;
+      padding: 24px;
+      color: #fff;
+      margin-bottom: 40px;
+    }
+
+    .helix-panel h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .helix-panel .sub {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 20px;
+    }
+
+    .helix-input-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .helix-input {
+      flex: 1;
+      background: #2a2a2a;
+      border: 1px solid #444;
+      border-radius: 10px;
+      padding: 12px 16px;
+      color: #fff;
+      font-size: 13px;
+    }
+
+    .helix-input::placeholder {
+      color: #666;
+    }
+
+    .helix-send {
+      background: #fff;
+      color: #1a1a1a;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 20px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .helix-rec {
+      background: #2a2a2a;
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 8px;
+    }
+
+    .helix-rec .rname {
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .helix-rec .ragents {
+      font-size: 11px;
+      color: #888;
+      margin-bottom: 6px;
+    }
+
+    .helix-rec .rreason {
+      font-size: 12px;
+      color: #ccc;
+      line-height: 1.5;
+    }
+
+    .confidence {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+
+    .conf-high {
+      background: #1a3a1a;
+      color: #6fc96f;
+    }
+
+    .conf-moderate {
+      background: #3a3a1a;
+      color: #c9c96f;
+    }
+
+    .conflict-flag {
+      color: #c96f6f;
+      font-size: 11px;
+      margin-top: 4px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 24px;
+      background: #f0f0ec;
+      border-radius: 10px;
+      padding: 4px;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 8px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 500;
+      border-radius: 8px;
+      cursor: pointer;
+      color: #666;
+      border: none;
+      background: none;
+    }
+
+    .tab.active {
+      background: #fff;
+      color: #1a1a1a;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    }
+
+    .signal-strip {
+      background: #fff;
+      border: 1px solid #e8e8e4;
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      font-size: 12px;
+      color: #666;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .signal-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .signal-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .dot-green {
+      background: #4caf50;
+    }
+
+    .dot-amber {
+      background: #ff9800;
+    }
+
+    .dot-gray {
+      background: #bbb;
+    }
+
+    .nudge-banner {
+      background: #fff8e8;
+      border: 1px solid #f0c040;
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nudge-banner .nudge-text {
+      font-size: 13px;
+      color: #8a5500;
+      line-height: 1.5;
+    }
+
+    .nudge-banner .nudge-cta {
+      background: #8a5500;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      margin-left: 16px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>healf.</h1>
+    <div class="user-select">
+      Viewing as:
+      <select id="userSelect" onchange="switchUser(this.value)">
+        <option value="u001">Sarah — sleep goals, 1 purchase</option>
+        <option value="u002">James — move goals, 3 purchases</option>
+        <option value="u003">Priya — Zone member, deficient biomarkers</option>
+        <option value="u004">Tom — cold start, no data</option>
+        <option value="u005">Elena — Zone member, 2 tests, cardiovascular pattern</option>
+        <option value="u006">Marcus — Zone member, missed second test</option>
+      </select>
+    </div>
+  </header>
+
+  <div class="intent-bar">
+    <span>On-browser model (ONNX):</span>
+    <div class="intent-pills">
+      <div class="intent-pill" id="pill-eat">EAT</div>
+      <div class="intent-pill" id="pill-move">MOVE</div>
+      <div class="intent-pill" id="pill-mind">MIND</div>
+      <div class="intent-pill" id="pill-sleep">SLEEP</div>
+    </div>
+    <span id="intent-label" style="color:#666">No session data yet — browse products to see intent update</span>
+    <button onclick="resetSession()" style="
+    background: #333; color: #aaa; border: 1px solid #555;
+    border-radius: 6px; padding: 3px 10px; font-size: 11px;
+    cursor: pointer; margin-left: auto;">
+      Reset session
+    </button>
+  </div>
+
+  <div class="layout">
+    <div class="sidebar">
+      <h3>User profile</h3>
+      <div id="userCard" class="user-card"></div>
+      <h3>Helix</h3>
+      <div class="helix-chips" id="helixChips"></div>
+    </div>
+
+    <div class="main">
+      <div class="tabs">
+        <button class="tab active" onclick="showTab('foryou', this)">For You page</button>
+        <button class="tab" onclick="showTab('pdp', this)">Product page</button>
+        <button class="tab" onclick="showTab('helix', this)">Helix</button>
+      </div>
+
+      <div id="tab-foryou">
+        <div id="nudgeBanner"></div>
+        <div class="signal-strip" id="signalStrip"></div>
+        <div class="section-header">
+          <h2 id="shelfTitle">For you this week</h2>
+          <span class="context-badge badge-personalised" id="contextBadge">Personalised</span>
+        </div>
+        <div class="product-grid" id="productGrid"></div>
+      </div>
+
+      <!-- PDP tab -->
+      <div id="tab-pdp" style="display:none">
+        <div class="pdp-panel">
+          <h3 id="pdpTitle">Product page</h3>
+          <div class="pdp-product">
+            <div class="info">
+              <div class="name" id="pdpName"></div>
+              <div class="brand-line" id="pdpBrandLine"></div>
+              <div class="benefits" id="pdpBenefits"></div>
+            </div>
+          </div>
+          <div id="whyBlock"></div>
+          <button class="add-to-cart" id="pdpCartBtn">Add to cart</button>
+          <div class="stack-section" id="stackSection"></div>
+        </div>
+      </div>
+
+      <div id="tab-helix" style="display:none">
+        <div class="helix-panel">
+          <h3>healf.Helix</h3>
+          <div class="sub">Four-agent reasoning — Eat · Move · Mind · Sleep</div>
+          <div class="helix-input-row">
+            <input class="helix-input" id="helixInput"
+              placeholder="Tell me about your health goals or what you want to improve..." />
+            <button class="helix-send" onclick="sendToHelix()">Ask</button>
+            <button title="Voice input coming soon — available in the Healf mobile app"
+              style="background:#2a2a2a;border:1px solid #444;border-radius:10px;padding:12px 14px;cursor:pointer;font-size:16px;"
+              onclick="alert('Voice input coming soon — available in the Healf mobile app')">
+              🎙
+            </button>
+          </div>
+          <div id="helixResults"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API = "http://localhost:8000";
+    let currentUser = "u001";
+    let sessionViews = [];
+    const PILLARS = ["Eat", "Move", "Mind", "Sleep"];
+
+    const PRODUCTS = {
+      p001: { name: "Magnesium Glycinate", brand: "Momentous", pillar: "Sleep", price: 29.99 },
+      p002: { name: "Vitamin D3 + K2", brand: "Thorne", pillar: "Eat", price: 24.99 },
+      p003: { name: "Omega-3 Fish Oil", brand: "Momentous", pillar: "Eat", price: 34.99 },
+      p004: { name: "Creatine Monohydrate", brand: "Thorne", pillar: "Move", price: 34.99 },
+      p005: { name: "Ashwagandha", brand: "Momentous", pillar: "Mind", price: 27.99 },
+      p006: { name: "L-Theanine", brand: "Pure Encapsulations", pillar: "Mind", price: 19.99 },
+      p007: { name: "Whey Protein", brand: "Momentous", pillar: "Move", price: 49.99 },
+      p008: { name: "Vitamin B12", brand: "Thorne", pillar: "Eat", price: 18.99 },
+      p009: { name: "Iron Bisglycinate", brand: "Pure Encapsulations", pillar: "Eat", price: 22.99 },
+      p010: { name: "Sleep Drops", brand: "The Nue Co", pillar: "Sleep", price: 35.00 },
+      p011: { name: "Zinc", brand: "Thorne", pillar: "Eat", price: 16.99 },
+      p012: { name: "Curcumin Complete", brand: "Natroceutics", pillar: "Eat", price: 39.99 },
+      p015: { name: "Electrolytes", brand: "LMNT", pillar: "Move", price: 24.99 },
+      p016: { name: "Melatonin", brand: "Pure Encapsulations", pillar: "Sleep", price: 14.99 },
+      p017: { name: "Colostrum", brand: "ARMRA", pillar: "Eat", price: 55.00 },
+      p018: { name: "Berberine", brand: "Thorne", pillar: "Eat", price: 32.99 },
+    };
+
+    const USERS = {
+      u001: {
+        name: "Sarah", age: 32, gender: "Female",
+        goals: ["Better Sleep", "Stress Relief"], pillar: "Sleep",
+        purchases: ["p001"], subscriptions: ["p001"],
+        zone: false, missed_second_test: false,
+        biomarkers: {}, biomarker_delta: null
+      },
+      u002: {
+        name: "James", age: 28, gender: "Male",
+        goals: ["Muscle Strength", "Athletic Performance", "Energy"], pillar: "Move",
+        purchases: ["p004", "p007", "p015"], subscriptions: ["p004", "p007"],
+        zone: false, missed_second_test: false,
+        biomarkers: {}, biomarker_delta: null
+      },
+      u003: {
+        name: "Priya", age: 41, gender: "Female",
+        goals: ["Energy", "Reduce Fatigue", "Immune Support"], pillar: "Eat",
+        purchases: ["p002", "p008"], subscriptions: ["p002"],
+        zone: true, missed_second_test: false,
+        test1_date: "Jan 2024", test2_date: null,
+        biomarkers: {
+          "Vitamin D": "28 nmol/L — deficient",
+          "Ferritin": "12 ug/L — deficient",
+          "Active B12": "45 pmol/L — suboptimal"
+        },
+        biomarker_delta: null
+      },
+      u004: {
+        name: "Tom", age: 25, gender: "Male",
+        goals: [], pillar: null,
+        purchases: [], subscriptions: [],
+        zone: false, missed_second_test: false,
+        biomarkers: {}, biomarker_delta: null
+      },
+      u005: {
+        name: "Elena", age: 45, gender: "Female",
+        goals: ["Heart Health", "Reduce Inflammation", "Brain Health"], pillar: "Eat",
+        purchases: ["p003", "p012", "p002", "p011"], subscriptions: ["p003", "p012"],
+        zone: true, missed_second_test: false,
+        test1_date: "Jan 2024", test2_date: "Jul 2024",
+        products_between_tests: ["p003", "p012"],
+        composite_pattern: "cardiovascular_risk",
+        pattern_markers: ["LDL Cholesterol", "CRP", "ApoB"],
+        // Latest (test 2) biomarker values
+        biomarkers: {
+          "LDL Cholesterol": "3.6 mmol/L — elevated",
+          "CRP": "2.1 mg/L — elevated",
+          "ApoB": "0.95 g/L — suboptimal",
+          "Magnesium": "0.78 mmol/L — suboptimal",
+          "Vitamin D": "68 nmol/L — optimal"
+        },
+        // Jan → Jul delta — this is the labeled training example
+        biomarker_delta: {
+          "LDL Cholesterol": { before: 4.1, after: 3.6, unit: "mmol/L", change: -0.5, direction: "down" },
+          "CRP": { before: 3.8, after: 2.1, unit: "mg/L", change: -1.7, direction: "down" },
+          "ApoB": { before: 1.1, after: 0.95, unit: "g/L", change: -0.15, direction: "down" },
+          "Magnesium": { before: 0.65, after: 0.78, unit: "mmol/L", change: +0.13, direction: "up" }
+        }
+      },
+      u006: {
+        name: "Marcus", age: 38, gender: "Male",
+        goals: ["Heart Health", "Energy", "Better Sleep"], pillar: "Eat",
+        purchases: ["p002", "p003"], subscriptions: ["p003"],
+        zone: true, missed_second_test: true,
+        test1_date: "Jan 2024", test2_date: null,
+        biomarkers: {
+          "Vitamin D": "32 nmol/L — deficient",
+          "LDL Cholesterol": "3.8 mmol/L — elevated",
+          "CRP": "2.9 mg/L — elevated",
+          "Ferritin": "18 ug/L — deficient"
+        },
+        biomarker_delta: null
+      }
+    };
+
+    // ── On-browser intent model ───────────────────────────────────────────────────
+    // In production: quantised ONNX model loaded via onnxruntime-web
+    // Here: same interface, keyword-based classifier
+
+    function resetSession() {
+      sessionViews = [];
+      PILLARS.forEach(p =>
+        document.getElementById(`pill-${p.toLowerCase()}`).classList.remove("active")
+      );
+      document.getElementById("intent-label").textContent =
+        "Session reset — no intent data";
+      const existing = document.getElementById("intentNotification");
+      if (existing) existing.remove();
+      loadForYou(null);
+    }
+
+    function inferIntent(viewedProducts) {
+      const scores = { Eat: 0, Move: 0, Mind: 0, Sleep: 0 };
+      viewedProducts.forEach(pid => {
+        const p = PRODUCTS[pid];
+        if (p) scores[p.pillar] = (scores[p.pillar] || 0) + 1;
+      });
+      const total = Object.values(scores).reduce((a, b) => a + b, 0) || 1;
+      const probs = {};
+      Object.entries(scores).forEach(([k, v]) => probs[k] = v / total);
+      const top = Object.entries(probs).sort((a, b) => b[1] - a[1])[0];
+      return { top_pillar: top[0], probabilities: probs };
+    }
+
+    function updateIntentBar(intent) {
+      PILLARS.forEach(p => {
+        document.getElementById(`pill-${p.toLowerCase()}`)
+          .classList.toggle("active", p === intent.top_pillar);
+      });
+      const prob = Math.round((intent.probabilities[intent.top_pillar] || 0) * 100);
+      document.getElementById("intent-label").textContent =
+        sessionViews.length === 0
+          ? "No session data yet — browse products to see intent update"
+          : `Inferred: ${intent.top_pillar} (${prob}% confidence) — shelf re-ranking`;
+    }
+
+    function simulateBrowse(pid) {
+      sessionViews.push(pid);
+      const intent = inferIntent(sessionViews);
+      updateIntentBar(intent);
+      loadForYou(intent.top_pillar);
+
+      // Only show notification after 2+ views to avoid noise
+      if (sessionViews.length >= 2) {
+        showIntentNotification(intent.top_pillar, sessionViews.length);
+      }
+    }
+
+    function showIntentNotification(pillar, viewCount) {
+      // Remove existing notification if any
+      const existing = document.getElementById("intentNotification");
+      if (existing) existing.remove();
+
+      const notice = document.createElement("div");
+      notice.id = "intentNotification";
+      notice.style.cssText = `
+    position: fixed; bottom: 24px; right: 24px;
+    background: #1a1a1a; color: #fff;
+    padding: 12px 18px; border-radius: 12px;
+    font-size: 13px; line-height: 1.5;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    z-index: 999; max-width: 280px;
+    animation: slideIn 0.2s ease;
+  `;
+      notice.innerHTML = `
+    <div style="font-size:10px;color:#888;margin-bottom:4px;font-weight:600;
+                letter-spacing:0.6px">ON-BROWSER MODEL (ONNX)</div>
+    <div>Detected <b>${pillar}</b> intent from ${viewCount} page views</div>
+    <div style="font-size:11px;color:#aaa;margin-top:4px">
+      Shelf re-ranked toward ${pillar} products — no server call needed
+    </div>
+  `;
+
+      // Auto-dismiss after 3 seconds
+      document.body.appendChild(notice);
+      setTimeout(() => {
+        if (notice.parentNode) notice.remove();
+      }, 3000);
+    }
+
+    // ── User card ─────────────────────────────────────────────────────────────────
+
+    async function loadUserCard() {
+      const user = USERS[currentUser];
+      const owned = user.purchases.map(p => PRODUCTS[p]?.name).filter(Boolean);
+      const bm = user.biomarkers;
+
+      // Biomarker delta — shown for Elena (two completed tests)
+      let deltaHtml = "";
+      if (user.biomarker_delta) {
+        const rows = Object.entries(user.biomarker_delta).map(([name, d]) => {
+          const arrow = d.direction === "down" ? "↓" : "↑";
+          const color = d.direction === "down" ? "#2d6a2d" : "#1a4a8a";
+          return `<div style="font-size:11px;margin-bottom:3px">
+        ${name}: ${d.before} → <b style="color:${color}">${d.after} ${d.unit} ${arrow}</b>
+      </div>`;
+        }).join("");
+        const productNames = (user.products_between_tests || [])
+          .map(pid => PRODUCTS[pid]?.name).filter(Boolean).join(" + ");
+        deltaHtml = `
+      <div style="margin-top:10px;padding:10px;background:#f0faf0;
+                  border-radius:8px;border:1px solid #c8e6c8">
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.6px;
+                    color:#2d6a2d;margin-bottom:6px">
+          ${user.test1_date} → ${user.test2_date} — BIOMARKER DELTA
+        </div>
+        ${rows}
+        <div style="font-size:10px;color:#2d6a2d;margin-top:6px">
+          Taking between tests: ${productNames}
+        </div>
+        <div style="font-size:10px;color:#2d6a2d;margin-top:3px">
+          This is a labeled training example — product + outcome = model signal
+        </div>
+      </div>`;
+      }
+
+      // Missed test warning — shown for Marcus
+      let missedTestHtml = "";
+      if (user.missed_second_test) {
+        missedTestHtml = `
+      <div style="margin-top:10px;padding:10px;background:#fff8e8;
+                  border-radius:8px;border:1px solid #f0c040">
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.6px;
+                    color:#8a5500;margin-bottom:4px">SECOND TEST OVERDUE</div>
+        <div style="font-size:11px;color:#8a5500;line-height:1.4">
+          First test: ${user.test1_date}. Second test not completed.<br>
+          Recommendations frozen at 6-month-old data.
+        </div>
+      </div>`;
+      }
+
+      // Wearable data — shown for James only
+      // In production: pulled from Oura/Whoop API via batch tier
+      let wearableHtml = "";
+      if (currentUser === "u002") {
+        wearableHtml = `
+      <div style="margin-top:10px;padding:10px;background:#f0f0f8;
+                  border-radius:8px;border:1px solid #c0c0e0">
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.6px;
+                    color:#444488;margin-bottom:8px;display:flex;
+                    justify-content:space-between">
+          <span>OURA RING — CONNECTED</span>
+          <span style="font-weight:400;color:#888">Last synced 6am</span>
+        </div>
+        <div style="font-size:11px;color:#333;line-height:1.8">
+          <div style="display:flex;justify-content:space-between">
+            <span>Sleep score</span>
+            <b style="color:#e07020">72 / 100 — below average</b>
+          </div>
+          <div style="display:flex;justify-content:space-between">
+            <span>HRV</span>
+            <b style="color:#e07020">48ms — trending down 3 days</b>
+          </div>
+          <div style="display:flex;justify-content:space-between">
+            <span>Resting HR</span>
+            <b style="color:#2d6a2d">58 bpm — normal</b>
+          </div>
+          <div style="display:flex;justify-content:space-between">
+            <span>Training load</span>
+            <b style="color:#e07020">High — 5 sessions this week</b>
+          </div>
+        </div>
+        <div style="margin-top:8px;padding:6px 8px;background:#fff8f0;
+                    border-radius:6px;border:1px solid #f0c090;
+                    font-size:11px;color:#8a4400;line-height:1.5">
+          HRV down + high training load → shelf boosted toward
+          recovery products. Magnesium and Omega-3 surfaced higher.
+        </div>
+      </div>`;
+      }
+
+      document.getElementById("userCard").innerHTML = `
+    <div class="name">${user.name}</div>
+    <div class="meta">${user.age} · ${user.gender}${user.zone ? ' · <b>Zone member</b>' : ''}</div>
+    ${user.zone ? '<span class="tag zone">Healf Zone</span>' : ''}
+    ${user.goals.map(g => `<span class="tag goal">${g}</span>`).join("")}
+    ${owned.length
+          ? `<div style="margin-top:8px;font-size:11px;color:#888">Owns: ${owned.join(", ")}</div>`
+          : '<div style="margin-top:8px;font-size:11px;color:#888">No purchases yet</div>'}
+    ${Object.keys(bm).length
+          ? `<div style="margin-top:8px;font-size:11px;color:#1a4a8a">
+           Biomarkers: ${Object.entries(bm).map(([k, v]) => `${k}: ${v}`).join(" · ")}
+         </div>`
+          : ""}
+    ${deltaHtml}
+    ${missedTestHtml}
+    ${wearableHtml}
+  `;
+    }
+
+    // ── Helix chips + memory opening ──────────────────────────────────────────────
+
+    async function loadHelixChips() {
+      try {
+        const res = await fetch(`${API}/helix/chips/${currentUser}`);
+        const data = await res.json();
+        document.getElementById("helixChips").innerHTML = data.chips
+          .map(c => `<button class="chip" onclick="fillHelix('${c}')">${c}</button>`)
+          .join("");
+
+        const user = USERS[currentUser];
+        const isColdStart = user.goals.length === 0 && user.purchases.length === 0;
+
+        // Cold start — Tom: proactive onboarding conversation
+        if (isColdStart) {
+          document.getElementById("helixResults").innerHTML = `
+        <div class="helix-rec">
+          <div class="rname" style="margin-bottom:8px">healf.Helix</div>
+          <div class="rreason" style="font-size:14px;line-height:1.7">
+            Hi ${user.name} — before I recommend anything, I want to understand
+            you a bit better. What's bringing you to Healf today? Are you trying
+            to fix something specific, or just curious about your health?
+          </div>
+        </div>`;
+          return;
+        }
+
+        // Zone member with two completed tests — Elena
+        // Helix already knows her full story — proactive, no prompting needed
+        if (user.zone && user.biomarker_delta) {
+          const deltaLines = Object.entries(user.biomarker_delta).map(([name, d]) => {
+            const arrow = d.direction === "down" ? "↓" : "↑";
+            const color = d.direction === "down" ? "#6fc96f" : "#c9c96f";
+            return `<span style="color:${color}">${name} ${d.before}→${d.after} ${arrow}</span>`;
+          }).join("  ·  ");
+
+          const productNames = (user.products_between_tests || [])
+            .map(pid => PRODUCTS[pid]?.name).filter(Boolean).join(" and ");
+
+          document.getElementById("helixResults").innerHTML = `
+        <div class="helix-rec">
+          <div class="rname" style="margin-bottom:6px">
+            healf.Helix
+            <span class="confidence conf-high">Memory active</span>
+          </div>
+          <div class="rreason" style="font-size:13px;line-height:1.8">
+            Welcome back, ${user.name}. I've reviewed your January and July results.
+            <br><br>
+            <span style="font-size:11px;color:#888">${deltaLines}</span>
+            <br><br>
+            Your LDL, CRP and ApoB were all elevated in January. These three markers
+            together tell a single story — a cardiovascular inflammation pattern —
+            not three separate problems. Six months on ${productNames}, and CRP has
+            dropped from 3.8 to 2.1 mg/L. LDL and ApoB are moving in the right
+            direction too.
+            <br><br>
+            This delta is what we use to understand what's actually working for
+            people with your profile. Across our Zone members, this pattern responds
+            well to Omega-3 and Curcumin — which is exactly what you've been taking.
+            <br><br>
+            One thing still worth addressing: Magnesium is at 0.78 mmol/L — improving
+            but not optimal yet. Want me to look at what would work best for
+            your profile next?
+          </div>
+        </div>`;
+          return;
+        }
+
+        // Zone member who missed second test — Marcus
+        // Helix knows test 1 data but can't tell if anything improved
+        if (user.zone && user.missed_second_test) {
+          const bmLines = Object.entries(user.biomarkers)
+            .map(([k, v]) => `${k}: ${v}`).join("  ·  ");
+
+          document.getElementById("helixResults").innerHTML = `
+        <div class="helix-rec">
+          <div class="rname" style="margin-bottom:6px">
+            healf.Helix
+            <span class="confidence conf-moderate">Partial memory</span>
+          </div>
+          <div class="rreason" style="font-size:13px;line-height:1.8">
+            Hi ${user.name}. I can see your ${user.test1_date} results —
+            <br>
+            <span style="font-size:11px;color:#888">${bmLines}</span>
+            <br><br>
+            Your Vitamin D was deficient and CRP was elevated. I've been
+            recommending Omega-3 and Vitamin D3 based on this — but that data
+            is now 6 months old. I don't know if things have improved, stayed
+            the same, or got worse.
+            <br><br>
+            <span style="color:#c9c96f">
+              Without your second test, your recommendations are frozen at your
+              January baseline. I can't personalise further until I have new data.
+            </span>
+            <br><br>
+            Your second test takes 15 minutes at home. Results come back in
+            3 days. Once we have them, I can tell you what's actually changed
+            and what to do next. Want me to walk you through booking it?
+          </div>
+        </div>`;
+          return;
+        }
+
+        // Known user with goals, no Zone — Sarah, James
+        // Helix knows their stack and goals
+        if (user.goals.length > 0) {
+          const owned = user.purchases.map(p => PRODUCTS[p]?.name).filter(Boolean);
+          document.getElementById("helixResults").innerHTML = `
+        <div class="helix-rec">
+          <div class="rname" style="margin-bottom:6px">
+            healf.Helix
+            <span class="confidence conf-moderate">Profile active</span>
+          </div>
+          <div class="rreason" style="font-size:13px;line-height:1.8">
+            Hi ${user.name}. Based on your goals
+            (${user.goals.join(", ").toLowerCase()})
+            ${owned.length ? `and what you're already taking (${owned.join(", ")}), ` : ", "}
+            I have some thoughts on what might be missing from your stack.
+            <br><br>
+            Ask me anything or use the suggestions on the left to get started.
+            To get more precise recommendations, consider a Healf Zone blood
+            test — it tells me what your biology actually needs, not just
+            what your goals suggest.
+          </div>
+        </div>`;
+          return;
+        }
+
+        document.getElementById("helixResults").innerHTML = "";
+
+      } catch (e) {
+        document.getElementById("helixChips").innerHTML =
+          '<div style="font-size:12px;color:#f00">Backend not running — start with: uvicorn backend.main:app --reload</div>';
+      }
+    }
+
+    // ── For You page ──────────────────────────────────────────────────────────────
+
+    async function loadForYou(pillarIntent = null) {
+      // Show nudge banner for Marcus (missed second test)
+      const user = USERS[currentUser];
+      if (user.missed_second_test) {
+        document.getElementById("nudgeBanner").innerHTML = `
+      <div class="nudge-banner">
+        <div class="nudge-text">
+          <b>Your second blood test is overdue.</b> Your recommendations are based on
+          data from ${user.test1_date}. Book your at-home test — 15 minutes, results in 3 days.
+        </div>
+        <button class="nudge-cta" onclick="alert('Redirecting to Healf Zone booking...')">
+          Book now
+        </button>
+      </div>`;
+      } else {
+        document.getElementById("nudgeBanner").innerHTML = "";
+      }
+
+      try {
+        const url = pillarIntent
+          ? `${API}/foryou/${currentUser}?pillar_intent=${pillarIntent}`
+          : `${API}/foryou/${currentUser}`;
+        const res = await fetch(url);
+        const data = await res.json();
+
+        document.getElementById("shelfTitle").textContent = data.shelf_title;
+        const badge = document.getElementById("contextBadge");
+        badge.textContent = data.context === "personalised" ? "Personalised" : "Cold start";
+        badge.className = `context-badge ${data.context === "personalised" ? "badge-personalised" : "badge-cold"}`;
+
+        const signals = data.signals_used || {};
+        document.getElementById("signalStrip").innerHTML = `
+      <div class="signal-item">
+        <span class="signal-dot ${signals.goals?.length ? 'dot-green' : 'dot-gray'}"></span>
+        Goals: ${signals.goals?.length ? signals.goals.join(", ") : "none"}
+      </div>
+      <div class="signal-item">
+        <span class="signal-dot ${signals.biomarker_aware ? 'dot-green' : 'dot-gray'}"></span>
+        Biomarker-aware: ${signals.biomarker_aware ? "yes" : "no"}
+      </div>
+      <div class="signal-item">
+        <span class="signal-dot ${signals.stack_gaps_detected > 0 ? 'dot-green' : 'dot-gray'}"></span>
+        Stack gaps: ${signals.stack_gaps_detected || 0}
+      </div>
+      <div class="signal-item">
+        <span class="signal-dot ${signals.session_intent ? 'dot-amber' : 'dot-gray'}"></span>
+        Session intent: ${signals.session_intent || "none"}
+      </div>
+      <div style="margin-left:auto;color:#aaa">${data.latency_ms}ms</div>
+    `;
+
+        document.getElementById("productGrid").innerHTML = data.products.map(p => {
+          const isOwned = USERS[currentUser]?.purchases.includes(p.product_id);
+          return `
+        <div class="product-card" onclick="simulateBrowse('${p.product_id}')">
+          <div class="pillar">${p.pillar}</div>
+          <div class="pname">${p.name}</div>
+          <div class="brand">${p.brand}</div>
+          <div class="price">£${p.price?.toFixed(2)}</div>
+          ${isOwned ? '<div class="tag owned" style="margin-top:6px">Already own</div>' : ''}
+        </div>`;
+        }).join("");
+      } catch (e) {
+        document.getElementById("productGrid").innerHTML =
+          '<div style="color:#f00;font-size:13px">Start backend: uvicorn backend.main:app --reload</div>';
+      }
+    }
+
+    // ── Product page ──────────────────────────────────────────────────────────────
+
+    function getPDPProduct() {
+      const user = USERS[currentUser];
+
+      // Pick the most relevant product for this user
+      // Zone member with biomarkers → pick product that addresses their worst marker
+      if (user.zone && currentUser === "u005") return "p003"; // Elena → Omega-3
+      if (user.zone && currentUser === "u003") return "p002"; // Priya → Vitamin D3
+      if (user.zone && currentUser === "u006") return "p002"; // Marcus → Vitamin D3
+
+      // Goal-based — pick from their goals
+      if (user.goals.includes("Muscle Strength")) return "p004"; // James → Creatine
+      if (user.goals.includes("Better Sleep")) return "p001"; // Sarah → Magnesium
+      if (user.goals.includes("Heart Health")) return "p003"; // Heart → Omega-3
+
+      // Cold start — show a popular product
+      return "p001";
+    }
+
+    async function loadPDP() {
+      const productId = getPDPProduct();
+      const product = PRODUCTS[productId];
+      const user = USERS[currentUser];
+
+      // Update product info in the panel
+      document.getElementById("pdpTitle").textContent =
+        `Product page — ${product.name}`;
+      document.getElementById("pdpName").textContent = product.name;
+      document.getElementById("pdpBrandLine").textContent =
+        `${product.brand.toUpperCase()} · £${product.price.toFixed(2)}`;
+      document.getElementById("pdpCartBtn").textContent =
+        `Add to cart — £${product.price.toFixed(2)}`;
+
+      // Product benefits — expand per product
+      const BENEFITS = {
+        p001: "Supports sleep quality and muscle relaxation. Magnesium glycinate is the most bioavailable form, gentle on the stomach.",
+        p002: "Supports bone health and immune function. Vitamin D3 works synergistically with K2 to direct calcium to bones rather than arteries.",
+        p003: "Supports heart health and reduces inflammation. High-quality EPA and DHA from sustainable sources, third-party tested for purity.",
+        p004: "Supports muscle strength and power output. Creatine monohydrate is the most researched performance supplement available.",
+        p005: "Supports stress resilience and calm energy. Ashwagandha root extract standardised for withanolide content.",
+      };
+      document.getElementById("pdpBenefits").textContent =
+        BENEFITS[productId] || product.benefits || "";
+
+      try {
+        const [whyRes, stackRes] = await Promise.all([
+          fetch(`${API}/pdp/${currentUser}/${productId}/why`),
+          fetch(`${API}/pdp/${currentUser}/${productId}/stack`)
+        ]);
+        const why = await whyRes.json();
+        const stack = await stackRes.json();
+
+        const isZone = user.zone;
+        const isColdStart = user.goals.length === 0 && user.purchases.length === 0;
+
+        // Cold start — FOMO instead of why block
+        if (isColdStart) {
+          document.getElementById("whyBlock").innerHTML = `
+        <div class="why-block" style="border-color:#ddd;background:#f8f8f6">
+          <div class="label" style="color:#888">Personalised insight</div>
+          <div class="text" style="color:#888">
+            Complete your profile to see exactly why this product is — or isn't —
+            right for you. We'll match it against your goals, your current stack,
+            and your biology.
+          </div>
+        </div>`;
+        } else if (why.show) {
+          const isBiomarker = isZone && why.why_right_for_you.includes("test");
+          document.getElementById("whyBlock").innerHTML = `
+        <div class="why-block ${isBiomarker ? 'biomarker' : ''}">
+          <div class="label">
+            ${isBiomarker ? 'From your blood results' : 'Why this is right for you'}
+          </div>
+          <div class="text">${why.why_right_for_you}</div>
+        </div>`;
+        } else {
+          document.getElementById("whyBlock").innerHTML = "";
+        }
+
+        if (stack.show) {
+          document.getElementById("stackSection").innerHTML = `
+        <h4>${stack.section_title}</h4>
+        <div class="stack-grid">
+          ${stack.products.map(p => `
+            <div class="stack-card">
+              <div class="sname">${p.name}</div>
+              <div class="sbrand">${p.brand}</div>
+              <div class="sprice">£${p.price?.toFixed(2)}</div>
+            </div>`).join("")}
+        </div>`;
+        } else {
+          const purchases = user.purchases || [];
+          document.getElementById("stackSection").innerHTML = purchases.length < 2
+            ? '<div style="font-size:12px;color:#888;margin-top:16px">Stack completion shown after 2+ purchases</div>'
+            : "";
+        }
+      } catch (e) {
+        document.getElementById("whyBlock").innerHTML =
+          '<div style="color:#f00;font-size:12px">Start backend: uvicorn backend.main:app --reload</div>';
+      }
+    }
+
+    // ── Helix agent query ─────────────────────────────────────────────────────────
+
+    async function sendToHelix() {
+      const message = document.getElementById("helixInput").value;
+      if (!message.trim()) return;
+
+      document.getElementById("helixResults").innerHTML =
+        '<div style="color:#888;font-size:13px">Agents thinking...</div>';
+
+      try {
+        const res = await fetch(`${API}/helix/recommend`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user_id: currentUser, message })
+        });
+        const data = await res.json();
+
+        const agentSummary = Object.entries(data.agent_outputs)
+          .filter(([, v]) => v.length > 0)
+          .map(([k, v]) => `${k}(${v.length})`).join(" · ");
+
+        document.getElementById("helixResults").innerHTML = `
+      <div style="font-size:11px;color:#666;margin-bottom:12px">
+        Agents fired: ${agentSummary}
+      </div>
+      ${data.recommendations.map(r => `
+        <div class="helix-rec">
+          <div class="rname">
+            ${r.product_name}
+            <span class="confidence ${r.confidence === 'high' ? 'conf-high' : 'conf-moderate'}">
+              ${r.confidence}
+            </span>
+          </div>
+          <div class="ragents">Suggested by: ${r.agreed_by.join(" + ")}</div>
+          <div class="rreason">${r.reason}</div>
+          ${r.conflict_flag ? '<div class="conflict-flag">⚠ Possible interaction with another recommendation</div>' : ''}
+        </div>`).join("") ||
+          '<div style="color:#888;font-size:13px">No strong matches found for this query.</div>'}
+    `;
+      } catch (e) {
+        document.getElementById("helixResults").innerHTML =
+          '<div style="color:#f00;font-size:13px">Start backend: uvicorn backend.main:app --reload</div>';
+      }
+    }
+
+    // ── Navigation ────────────────────────────────────────────────────────────────
+
+    function fillHelix(text) {
+      showTab("helix", document.querySelectorAll(".tab")[2]);
+      document.getElementById("helixInput").value = text;
+    }
+
+    function showTab(tab, el) {
+      document.querySelectorAll('[id^="tab-"]').forEach(t => t.style.display = "none");
+      document.getElementById(`tab-${tab}`).style.display = "block";
+      document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+      el.classList.add("active");
+      if (tab === "pdp") loadPDP();
+      if (tab === "helix") loadHelixChips();
+    }
+
+    async function switchUser(userId) {
+      currentUser = userId;
+      sessionViews = [];
+      PILLARS.forEach(p => document.getElementById(`pill-${p.toLowerCase()}`).classList.remove("active"));
+      document.getElementById("intent-label").textContent = "No session data yet — browse products to see intent update";
+      await Promise.all([loadUserCard(), loadHelixChips(), loadForYou()]);
+    }
+
+    // ── Init ──────────────────────────────────────────────────────────────────────
+    switchUser("u001");
+  </script>
+</body>
+
+</html>
