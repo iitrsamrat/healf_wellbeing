@@ -73,10 +73,10 @@ def get_helix_chips(user_id: str):
     if not goals and not purchases:
         return {
             "chips": [
-                "What's bringing you to Healf today?",
-                "Help me find the right supplements",
                 "I want to improve my sleep",
-                "What should I take for more energy?"
+                "I need more energy",
+                "I'm new — where do I start?",
+                "What should I take for my goals?"
             ],
             "context": "cold_start"
         }

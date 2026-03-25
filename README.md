@@ -4,6 +4,9 @@ Personalisation layer for Healf across two surfaces: the For You page and the Pr
 
 Read `ARCHITECTURE.md` first — it explains what's here and why.
 
+## Loom walkthrough
+[Video walkthrough](https://www.loom.com/share/4882d08f188d41c6b42850f3ee7ed544)
+
 ---
 
 ## Setup (under 10 minutes)
